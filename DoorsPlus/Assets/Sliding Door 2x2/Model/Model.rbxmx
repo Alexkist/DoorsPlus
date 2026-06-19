@@ -62,9 +62,9 @@
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="NumberValue" referent="RBX4C7FB5D854FD4498A0107D13BD04D668">
+			<Item class="IntValue" referent="RBX1D50EFD1FD1C487697899D82DEE9B3F9">
 				<Properties>
-					<double name="Value">2</double>
+					<int64 name="Value">2</int64>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="DefinesCapabilities">false</bool>
