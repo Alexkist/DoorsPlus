@@ -9,7 +9,7 @@ local Left = Container.Left
 
 local Configuration = Container:WaitForChild("Configuration")
 
-local OpenDoorEvent = Container.OpenDoor
+local OpenDoorEvent = Container.Output
 
 --// System Table
 local Sys = {
@@ -42,7 +42,7 @@ function Sys:PlayTween(Name : string, Tween : Tween)
 end
 
 --// Clears all Tweens
-function Sys:ClearTweens()
+function Sys:PurgeTweens()
 	--// Clear Tweens
 	for Name, Tween in pairs(Sys.Active_Tweens) do
 		if Tween:IsA("Tween") then
@@ -65,6 +65,9 @@ local function OpenDoor()
 	local Left_Main = Left.Main
 	local Right_Main = Right.Main
 	
+	--// Purge Tweens
+	Sys:PurgeTweens()
+	
 	--// Generate Info (this will respect Config values)
 	local Info = TweenInfo.new(
 		Configuration.TweenTime.Value,
@@ -75,18 +78,72 @@ local function OpenDoor()
 	local LeftTween = TS:Create(
 		Left_Main,
 		Info,
-		{CFrame = Left_Main.CFrame * CFrame.new(-6, 0, 0)}
+		{CFrame = Left_Main.CFrame * CFrame.new(3.25, 0, 0)}
 	)
 	local RighTween = TS:Create(
 		Right_Main,
 		Info,
-		{CFrame = Right_Main.CFrame * CFrame.new(6, 0, 0)}
+		{CFrame = Right_Main.CFrame * CFrame.new(3.25, 0, 0)}
 	)
+	
+	--// Anchor Doors
+	Left_Main.Anchored = true
+	Right_Main.Anchored = true
 	
 	--// Play
 	local Left_DoorTween = Sys:PlayTween("Left_Door_Open", LeftTween)
 	local Right_DoorTween = Sys:PlayTween("Right_Door_Open", RighTween)
 end
+
+--// Tweens the Door to Close
+local function CloseDoor()
+	--// locals
+	local Left_Main = Left.Main
+	local Right_Main = Right.Main
+	
+	--// Purge Tweens
+	Sys:PurgeTweens()
+
+	--// Generate Info (this will respect Config values)
+	local Info = TweenInfo.new(
+		Configuration.TweenTime.Value,
+		Enum.EasingStyle.Sine
+	)
+
+	--// Generate Tween
+	local LeftTween = TS:Create(
+		Left_Main,
+		Info,
+		{CFrame = Sys.Orig["LeftDoor"]}
+	)
+	local RighTween = TS:Create(
+		Right_Main,
+		Info,
+		{CFrame = Sys.Orig["RightDoor"]}
+	)
+
+	--// Play
+	local Left_DoorTween = Sys:PlayTween("Left_Door_Open", LeftTween)
+	local Right_DoorTween = Sys:PlayTween("Right_Door_Open", RighTween)
+	
+	--// Connect Complete
+	Left_DoorTween.Completed:Connect(function()
+		--// Unanchor Doors
+		Left_Main.Anchored = false
+		Right_Main.Anchored = false
+	end)	
+end
+
+
+
+--// Get OrigValues
+local Left_Orig = Left.Main.CFrame
+local Right_Orig = Right.Main.CFrame
+
+--// Set System
+Sys.Orig["LeftDoor"] = Left_Orig
+Sys.Orig["RightDoor"] = Right_Orig
+
 
 
 
@@ -96,6 +153,9 @@ OpenDoorEvent.SourceValueChanged:Connect(function(value)
 		--// Open Doors
 		OpenDoor()
 	else
-		
+		CloseDoor()
 	end
 end)
+
+--// Complete
+print(`[DoorsPlus : {Container:GetFullName()}]: Set up!`)
