@@ -1,0 +1,101 @@
+--// locals
+--// Services
+local TS = game:GetService("TweenService")
+
+--// Objects
+local Container = script.Parent
+local Right = Container.Right
+local Left = Container.Left
+
+local Configuration = Container:WaitForChild("Configuration")
+
+local OpenDoorEvent = Container.OpenDoor
+
+--// System Table
+local Sys = {
+	--// Connections
+	Orig = {}, -- ["DoorName"] = OrigCFrame
+	Active_Tweens = {}, -- ["TweenName"] = Tween
+	-- The only Job of Active_Tweens is literally to be able to cancel a Tween, at any time.
+}
+
+-- System functions --
+
+--// Plays a Tween within Sys.Tweens, and clears it after
+-- This also returns the Tween if you need it!
+function Sys:PlayTween(Name : string, Tween : Tween)
+	--// Move to active Tweens
+	Sys.Active_Tweens[Name] = Tween
+
+	--// Play
+	Tween:Play()
+
+	--// Purge Tween
+	task.defer(function()
+		Tween.Completed:Connect(function()
+			Sys.Active_Tweens[Name] = nil
+		end)
+	end)
+
+	--// Export
+	return Tween
+end
+
+--// Clears all Tweens
+function Sys:ClearTweens()
+	--// Clear Tweens
+	for Name, Tween in pairs(Sys.Active_Tweens) do
+		if Tween:IsA("Tween") then
+			--// Cancel Tween
+			Tween:Cancel()
+			
+			--// Remove from Table
+			Sys.Active_Tweens[Name] = nil
+		end
+	end
+end
+
+
+
+-- functions --
+
+--// Tweens the Door to Open
+local function OpenDoor()
+	--// locals
+	local Left_Main = Left.Main
+	local Right_Main = Right.Main
+	
+	--// Generate Info (this will respect Config values)
+	local Info = TweenInfo.new(
+		Configuration.TweenTime.Value,
+		Enum.EasingStyle.Sine
+	)
+	
+	--// Generate Tween
+	local LeftTween = TS:Create(
+		Left_Main,
+		Info,
+		{CFrame = Left_Main.CFrame * CFrame.new(-6, 0, 0)}
+	)
+	local RighTween = TS:Create(
+		Right_Main,
+		Info,
+		{CFrame = Right_Main.CFrame * CFrame.new(6, 0, 0)}
+	)
+	
+	--// Play
+	local Left_DoorTween = Sys:PlayTween("Left_Door_Open", LeftTween)
+	local Right_DoorTween = Sys:PlayTween("Right_Door_Open", RighTween)
+end
+
+
+
+-- Connections --
+OpenDoorEvent.SourceValueChanged:Connect(function(value)
+	if value >= 0.5 then
+		--// Open Doors
+		OpenDoor()
+	else
+		
+	end
+end)
