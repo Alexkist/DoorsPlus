@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Alexkist (https://github.com/Alexkist), Zaid (https://www.roblox.com/users/1179738915/profile)
+Copyright (c) 2026 Alexkist (https://github.com/Alexkist), Zaid (https://github.com/Z4ID-LABS)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
