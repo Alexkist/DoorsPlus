@@ -9,7 +9,7 @@ local Left = Container.Left
 
 local Configuration = Container:WaitForChild("Configuration")
 
-local OpenDoorEvent = Container.Output
+local OpenDoorEvent = Container.OpenDoor
 
 --// System Table
 local Sys = {
