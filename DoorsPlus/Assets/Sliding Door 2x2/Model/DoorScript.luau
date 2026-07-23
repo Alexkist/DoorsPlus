@@ -123,8 +123,8 @@ local function CloseDoor()
 	)
 
 	--// Play
-	local Left_DoorTween = Sys:PlayTween("Left_Door_Open", LeftTween)
-	local Right_DoorTween = Sys:PlayTween("Right_Door_Open", RighTween)
+	local Left_DoorTween = Sys:PlayTween("Left_Door_Close", LeftTween)
+	local Right_DoorTween = Sys:PlayTween("Right_Door_Close", RighTween)
 	
 	--// Connect Complete
 	Left_DoorTween.Completed:Connect(function()
