@@ -9,7 +9,7 @@ local Left = Container.Left
 
 local Configuration = Container:WaitForChild("Configuration")
 
-local OpenDoorEvent = Container.OpenDoor
+local OpenDoorEvent = Container.Primay.Open
 
 --// System Table
 local Sys = {
@@ -59,6 +59,24 @@ end
 
 -- functions --
 
+--// Unanchors all Door Parts excluding the "Main" and Deletes all found Welds
+-- This is a very experimental solution to combat the Doors breaking due to Welds being inserted.
+local function CleanupDoors(DoorModels : {Model})
+	for _, Model in DoorModels do
+		if Model:IsA("Model") then
+			for _, Part in ipairs(Model:GetChildren()) do
+				if Part:IsA("BasePart") and Part.Name ~= "Main" then
+					--// locals
+					local Weld = Part:FindFirstChildWhichIsA("Weld")
+
+					Part.Anchored = false
+					if Weld then Weld:Destroy() end
+				end
+			end
+		end
+	end
+end
+
 --// Tweens the Door to Open
 local function OpenDoor()
 	--// locals
@@ -87,8 +105,8 @@ local function OpenDoor()
 	)
 	
 	--// Anchor Doors
-	Left_Main.Anchored = true
-	Right_Main.Anchored = true
+	-- Left_Main.Anchored = true
+	-- Right_Main.Anchored = true
 	
 	--// Play
 	local Left_DoorTween = Sys:PlayTween("Left_Door_Open", LeftTween)
@@ -129,8 +147,8 @@ local function CloseDoor()
 	--// Connect Complete
 	Left_DoorTween.Completed:Connect(function()
 		--// Unanchor Doors
-		Left_Main.Anchored = false
-		Right_Main.Anchored = false
+		-- Left_Main.Anchored = false
+		-- Right_Main.Anchored = false
 	end)	
 end
 
@@ -143,6 +161,10 @@ local Right_Orig = Right.Main.CFrame
 --// Set System
 Sys.Orig["LeftDoor"] = Left_Orig
 Sys.Orig["RightDoor"] = Right_Orig
+
+--// Unachor Door Objects
+print(`[DoorsPlus : {Container:GetFullName()}]: Cleaning up...`)
+CleanupDoors({Left, Right})
 
 
 
